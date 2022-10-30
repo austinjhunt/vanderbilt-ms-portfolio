@@ -68,7 +68,18 @@ audio:not([controls]) {
 template {
   display: none;
 }
+
 img {
+  width: 75%;
+  border: 1px solid grey;
+  &.w-auto {
+    width: auto;
+  }
+  @media only screen and (max-width: 820px) {
+    & {
+      width: 100%;
+    }
+  }
   max-width: 100%;
   font-style: italic;
   vertical-align: middle;
@@ -385,6 +396,9 @@ small {
     border: 0.7px solid grey;
   }
 }
+.m-auto {
+  margin: auto;
+}
 .mb-1 {
   margin-bottom: 1rem;
 }
@@ -686,6 +700,7 @@ table.grades {
         padding: 0.5rem;
         height: 15.75pt;
         vertical-align: middle;
+        font-size: 0.8rem;
       }
       &.semester-title {
         td {
