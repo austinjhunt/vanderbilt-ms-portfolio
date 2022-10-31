@@ -101,6 +101,28 @@ ul {
     }
   }
 }
+ul.expertise {
+  list-style: none;
+  h4 {
+    span.title {
+      margin-left: 0.8rem;
+      width: 100%;
+      margin-bottom: 0.6rem;
+    }
+  }
+  p {
+    font-size: 0.95rem;
+    margin-left: 1rem;
+    span.skill {
+      background-color: lightgrey;
+      color: black;
+      padding: 0.6rem;
+      border-radius: 1rem;
+      margin: 0.5rem;
+      display: inline-block;
+    }
+  }
+}
 header a {
   padding: 5px 1px;
 }

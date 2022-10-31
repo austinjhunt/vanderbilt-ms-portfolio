@@ -75,6 +75,23 @@ ul.degrees, ul.employment, ul.achievements-honors-awards, ul.certifications, ul.
       font-size: 0.95rem;
       margin-left: 1rem; }
 
+ul.expertise {
+  list-style: none; }
+  ul.expertise h4 span.title {
+    margin-left: 0.8rem;
+    width: 100%;
+    margin-bottom: 0.6rem; }
+  ul.expertise p {
+    font-size: 0.95rem;
+    margin-left: 1rem; }
+    ul.expertise p span.skill {
+      background-color: lightgrey;
+      color: black;
+      padding: 0.6rem;
+      border-radius: 1rem;
+      margin: 0.5rem;
+      display: inline-block; }
+
 header a {
   padding: 5px 1px; }
 
