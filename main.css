@@ -31,21 +31,39 @@ nav,
 section {
   display: block; }
 
-ul.degrees, ul.employment, ul.achievements-honors-awards, ul.certifications {
+ul.degrees, ul.employment, ul.achievements-honors-awards, ul.certifications, ul.service {
   list-style: none; }
-  ul.degrees li, ul.employment li, ul.achievements-honors-awards li, ul.certifications li {
+  ul.degrees li, ul.employment li, ul.achievements-honors-awards li, ul.certifications li, ul.service li {
     margin-top: 1rem;
     margin-bottom: 1rem; }
-    ul.degrees li h4, ul.employment li h4, ul.achievements-honors-awards li h4, ul.certifications li h4 {
+    ul.degrees li h4, ul.employment li h4, ul.achievements-honors-awards li h4, ul.certifications li h4, ul.service li h4 {
       display: flex;
       flex-flow: row nowrap;
       justify-content: flex-end; }
-      ul.degrees li h4 span.spacer, ul.employment li h4 span.spacer, ul.achievements-honors-awards li h4 span.spacer, ul.certifications li h4 span.spacer {
+      ul.degrees li h4 span.spacer, ul.employment li h4 span.spacer, ul.achievements-honors-awards li h4 span.spacer, ul.certifications li h4 span.spacer, ul.service li h4 span.spacer {
         visibility: hidden;
         flex-grow: 1; }
     @media only screen and (max-width: 820px) {
-      ul.degrees li h4, ul.employment li h4, ul.achievements-honors-awards li h4, ul.certifications li h4 {
+      ul.degrees li h4, ul.employment li h4, ul.achievements-honors-awards li h4, ul.certifications li h4, ul.service li h4 {
         flex-flow: row wrap; } }
+    ul.degrees li p, ul.employment li p, ul.achievements-honors-awards li p, ul.certifications li p, ul.service li p {
+      font-size: 0.95rem;
+      margin-left: 1rem; }
+ul.publications {
+  list-style: none; }
+  ul.publications li {
+    margin-top: 1rem;
+    margin-bottom: 1rem; }
+    ul.publications li h4 {
+      display: flex;
+      flex-flow: row wrap;
+      justify-content: flex-start; }
+      ul.publications li h4 span.spacer {
+        visibility: hidden;
+        flex-grow: 1; }
+      ul.publications li h4 span {
+        margin-top: 0.25rem;
+        margin-bottom: 0.25rem; }
 
 header a {
   padding: 5px 1px; }

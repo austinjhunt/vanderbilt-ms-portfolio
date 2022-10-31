@@ -35,7 +35,8 @@ ul {
   &.degrees,
   &.employment,
   &.achievements-honors-awards,
-  &.certifications {
+  &.certifications,
+  &.service {
     list-style: none;
     li {
       margin-top: 1rem;
@@ -53,6 +54,31 @@ ul {
         h4 {
           flex-flow: row wrap;
         }
+      }
+      p {
+        font-size: 0.95rem;
+        margin-left: 1rem;
+      }
+    }
+  }
+
+  &.publications {
+    list-style: none;
+    li {
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      h4 {
+        display: flex;
+        span.spacer {
+          visibility: hidden;
+          flex-grow: 1;
+        }
+        span {
+          margin-top: 0.25rem;
+          margin-bottom: 0.25rem;
+        }
+        flex-flow: row wrap;
+        justify-content: flex-start;
       }
     }
   }
