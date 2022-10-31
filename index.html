@@ -1189,28 +1189,308 @@
 
             <div class="pagebreak"></div>
             <div class="page">
-                <section class="c-archives">
+                <section class="c-archives ">
                     <h2 class="section-header">
                         Knowledge and Mastery of Computer Science Concepts
                     </h2>
-                    <p>A student in the M.Sc. degree program in Computer Science must be able to demonstrate knowledge
-                        and mastery of computer science concepts.
-                        Add a File Record Audio Record Video
-                        Attachments
-                        Submit Assignment
-                        Files to submit
-                        (0) file(s) to submit
-                        After uploading, you must click Submit to complete the submission.
-                        Comments
-                        A student is expected to have the ability to apply computer science concepts in order to solve
-                        advanced problems. One artifact is required to demonstrate such ability. The artifact can be a
-                        course
-                        assignment or project. The statement of the problem should be also included.
-                        A student is expected to contribute substantially to significant software artifacts. One such
-                        artifact is
-                        a required component for the portfolio. Include a copy of one such artifact which may contain
-                        design
-                        documents, software documentation, and actual code.</p>
+                    <div class="project">
+                        <div class="readme">
+                            <h3 class="center"
+                                id="cyberbull-investment-simulator-brokerage-account-management-meets-design-patterns">
+                                <code>Cyberbull Investment Simulator - Brokerage Account Management Meets Design Patterns</code>
+                            </h3>
+                            <hr />
+                            <div class="center">
+                                <img src="img/cyberbull.png" class="w-75" alt="cyberbull project header image">
+                            </div>
+                            <p>
+                                This is an application built with the Spring Framework called Cyberbull Investment
+                                Simulator that I built as a final project for
+                                a Vanderbilt University CS 5278 (Principles of Software Engineering). The
+                                <strong>open-ended problem statement</strong> was as follows: develop a large-scale
+                                software
+                                project that solves a problem in your life and leverage established software
+                                architecture design patterns in its design.
+                            </p>
+                            <p>
+                                This project is a reflection of my personal interest in the stock market and is
+                                an exploration of many <a href="https://en.wikipedia.org/wiki/Design_Patterns">Gang of
+                                    Four design patterns</a> in the context of
+                                stocks and brokerage account management. It provides an environment for a user to look
+                                at stock market data and act on that data in a simulated brokerage account that's
+                                completely free of financial risk. The application makes heavy use of
+                                <strong>object-oriented</strong> programming techniques
+                                for <strong>structure and organization</strong>, as well as <strong>functional</strong>
+                                programming techniques to draw <strong>clear connections</strong>
+                                between the <strong>domain intent</strong> (brokerage account management) and the
+                                <strong>computation</strong>. It also largely depends on
+                                the <a href="https://github.com/sstrickx/yahoofinance-api">this Java library</a> for
+                                interacting with the Yahoo Finance API,
+                                plus <a href="https://newsapi.org/">this free News API</a> for collecting current news
+                                filtered by business names.
+                                <strong>Note: the underlying stock database for this application is generated
+                                    using <a
+                                        href="https://github.com/austinjhunt/cyberbull/blob/master/src/main/resources/static/csv/sp500.csv">this
+                                        CSV file</a> which only
+                                    includes the S&amp;P 500.</strong>
+                            </p>
+                            <h3 id="first-the-object-oriented-">First, the Object Oriented...</h3>
+                            <h4 id="what-design-patterns-are-used-">What design patterns are used?</h4>
+                            <h5 id="-the-command-pattern-https-refactoring-guru-design-patterns-command-"><a
+                                    href="https://refactoring.guru/design-patterns/command">The Command Pattern</a></h5>
+                            <p>The command pattern &mdash; described in the link above as <strong>a behavioral design
+                                    pattern
+                                    that turns a request into a
+                                    stand-alone object that contains all information about the request</strong> &mdash;
+                                is
+                                used heavily for maintaining records of
+                                activity, where &quot;activity&quot; is actually a command invoker that executes and
+                                stores concrete implementations of different
+                                operations.</p>
+                            <h6 id="at-the-account-level">At the Account Level</h6>
+                            <p>An <a
+                                    href="https://github.com/austinjhunt/cyberbull/blob/master/src/main/java/edu/vanderbilt/cs/cyberbull/core/account/commander/AccountActivity.java">AccountActivity
+                                    Commander</a>
+                                is used to keep a record of account-level activity, namely transfers, where a
+                                TransferOperation is a concrete
+                                AccountOperation that gets executed and stored by the Account Activity Commander. This
+                                commander is useful for
+                                displaying a history of transfer operations on a dashboard.</p>
+                            <h6 id="at-the-portfolio-level">At the Portfolio Level</h6>
+                            <p>A <a
+                                    href="https://github.com/austinjhunt/cyberbull/blob/master/src/main/java/edu/vanderbilt/cs/cyberbull/core/portfolio/PortfolioActivity.java">PortfolioActivity
+                                    Commander</a> is used
+                                to keep a record of portfolio activity, represented as PortfolioOperations. A
+                                PortfolioOperation is most generally an
+                                OrderOperation, and for the sake of demonstration it is making use of only the
+                                MarketOrderOperation, which represents
+                                a &quot;Market Order&quot; of a stock. The alternative is a Limit Order. Documentation
+                                about these order types is provided in the
+                                respective .java files. Moreover, since a portfolio consists of a set of open positions
+                                (a position just represents some
+                                investment in some number of shares of a stock), and a position can be updated over time
+                                by buying or selling more of
+                                that position's stock, Cyberbull also stores the operations affecting a given
+                                position in an operation list for that
+                                position. This means we can view a history of orders at the portfolio level and at the
+                                position level (within that
+                                portfolio) on an account dashboard.</p>
+                            <h5 id="-the-strategy-pattern-https-refactoring-guru-design-patterns-strategy-"><a
+                                    href="https://refactoring.guru/design-patterns/strategy">The Strategy Pattern</a>
+                            </h5>
+                            <p>One important thing to note is that while a bank account simply has a balance associated
+                                with it, a brokerage account
+                                has both a balance and a core position. A core position represents a balance of
+                                uninvested cash just sitting in the
+                                account waiting to be invested or transferred somewhere. The <em>balance</em> is the sum
+                                of the investment values in the
+                                account's portfolios and the core position. Now, for handling transfers, we are only
+                                interested in the transferable
+                                balance of an account, which for a brokerage account is just the core position. So, to
+                                find transferable balance of an
+                                account that could be one of two different types, Cyberbull uses the strategy pattern.
+                                The <a
+                                    href="https://github.com/austinjhunt/cyberbull/blob/master/src/main/java/edu/vanderbilt/cs/cyberbull/core/account/balancefinder/BalanceFinderContext.java">BalanceFinderContext</a>
+                                class serves as the context which takes in an account and routes the &quot;get the
+                                transferable balance&quot; logic to the
+                                appropriate strategy (there's a bank account balance finder strategy which just
+                                returns the balance if it's a bank
+                                account, and a brokerage account strategy which returns the core position if it's a
+                                brokerage account). This way, the
+                                client doesn't need to know what type an account is, or how to handle that type.</p>
+                            <h5
+                                id="-the-factory-method-pattern-https-refactoring-guru-design-patterns-creational-patterns-">
+                                <a href="https://refactoring.guru/design-patterns/creational-patterns">The Factory
+                                    Method Pattern</a>
+                            </h5>
+                            <p>With the factory method, you provide an interface for creating objects in a superclass,
+                                but you use subclasses to change
+                                the type of object that gets created.</p>
+                            <h6 id="positions">Positions</h6>
+                            <p>When managing a stock portfolio, you can open different types of positions depending
+                                basically on what you are hoping to
+                                profit off of. In a nutshell, if you want to profit off of a business losing money, you
+                                can open a short position, AKA
+                                you can &quot;short&quot; the company's stock. Alternatively, and most commonly, you
+                                may want to profit off of a company's growth
+                                buy buying shares and selling them at a later date at a higher price; this is called a
+                                &quot;long&quot;
+                                position. You can check
+                                out <a
+                                    href="https://www.investopedia.com/ask/answers/100314/whats-difference-between-long-and-short-position-market.asp">Investopedia</a>
+                                for more information about the finance side of things. Now, for creating positions
+                                within the app, there is a
+                                PositionFactory interface with a createPosition() method, and an IPositionFactory
+                                superclass that implements that
+                                interface to create a Position superclass. Below that, there is a ShortPosition class
+                                and a LongPosition class,
+                                representing the different subclasses, or types, of market positions. Running parallel,
+                                there is a ShortPositionFactory
+                                and a LongPositionFactory responsible for creating those respective types of Position
+                                objects.</p>
+                            <h6 id="random-attributes">Random Attributes</h6>
+                            <p>The factory pattern is also used to generate random phrases (for titles and descriptions)
+                                for the different account types. Since this is a simulator, it allows for you to
+                                randomly generate new accounts without having to manually enter account numbers, routing
+                                numbers, titles, and descriptions. Currently, there is a RandomPhraseFactory implemented
+                                by RandomBrokerageAccountTitleFactory and RandomBankAccountTitleFactory, which each
+                                handle the random generation of phrases appropriate to their respective account types.
+                                For example, a brokerage account title may be something like &quot;investments for
+                                retirement&quot; but that same random choice would not make sense for a bank account,
+                                which may be titled something like &quot;joint savings account&quot; or &quot;credit
+                                union&quot;.</p>
+                            <h5 id="-the-bridge-pattern-https-refactoring-guru-design-patterns-bridge-"><a
+                                    href="https://refactoring.guru/design-patterns/bridge">The Bridge Pattern</a></h5>
+                            <p>The Bridge pattern is used pretty heavily since the obvious goal is to divide the
+                                complexity of the underlying code
+                                base (found in the core/ folder) from the client, or the controller. The Dashboard
+                                object and DashboardService serves
+                                largely as this bridge of communication between the simple front end and complex back
+                                end by persistently storing
+                                backend implementations as attributes (i.e. <em>dependency injection</em>) which get
+                                called upon to handle front end requests.
+                                The dashboard service is the most persistent object across the controllers, allowing
+                                state to be shared and maintained.</p>
+                            <h5 id="-the-visitor-pattern-https-refactoring-guru-design-patterns-visitor-"><a
+                                    href="https://refactoring.guru/design-patterns/visitor">The Visitor Pattern</a></h5>
+                            <p>The visitor pattern, as mentioned in the link above, &quot;lets you separate algorithms
+                                from the objects on which they
+                                operate&quot;. In this project, the visitor pattern is used to easily provide multiple
+                                methods of accessing price history of
+                                a stock. Specifically, the visitor (one of the concrete implementations of
+                                the <a
+                                    href="https://github.com/austinjhunt/cyberbull/blob/master/src/main/java/edu/vanderbilt/cs/cyberbull/core/stock_history/StockHistoryVisitor.java">StockHistoryVisitor</a>
+                                interface) generates the price history of a given stock at an interval determined by the
+                                type of visitor, e.g. daily,
+                                monthly, or weekly. That is, different types of visitors &quot;visit&quot; the
+                                historical data to generate a
+                                differently-intervaled lists of historical price points.</p>
+                            <h5 id="-the-proxy-pattern-https-refactoring-guru-design-patterns-proxy-"><a
+                                    href="https://refactoring.guru/design-patterns/proxy">The Proxy Pattern</a></h5>
+                            <p>As discussed in the link above, a proxy controls access to some original object, allowing
+                                you to perform something
+                                either before or after the request reaches that original object. In the context of this
+                                project, the proxy pattern comes
+                                to life with the <a
+                                    href="https://github.com/austinjhunt/cyberbull/blob/master/src/main/java/edu/vanderbilt/cs/cyberbull/core/Stock.java">Stock</a>
+                                class.
+                                Why? Well, Cyberbull is
+                                largely dependent on YahooFinance, specifically YahooFinance logic specific to certain
+                                stocks, e.g. opens, closes,
+                                volumes, general price information, etc. The proxy pattern is seen in how the internal
+                                Stock class is used to interact
+                                with and process information from the Yahoo Finance API. It's also seen in the use
+                                of
+                                the <a
+                                    href="https://github.com/austinjhunt/cyberbull/blob/master/src/main/java/edu/vanderbilt/cs/cyberbull/core/news/NewsFinder.java">News
+                                    Finder</a> which utilizes the SDK
+                                for <a href="(https://newsapi.org/">this free news API</a>) to send customized requests
+                                to filter out news and handle custom
+                                formatting of the responses from that API.</p>
+                            <h5
+                                id="-the-chain-of-responsibility-pattern-https-refactoring-guru-design-patterns-chain-of-responsibility-">
+                                <a href="https://refactoring.guru/design-patterns/chain-of-responsibility">The Chain of
+                                    Responsibility Pattern</a>
+                            </h5>
+                            <p>This is pretty typical of web applications where requests get routed from a front end
+                                down through a chain of backend
+                                modules.</p>
+                            <h5 id="-the-iterator-pattern-https-refactoring-guru-design-patterns-iterator-"><a
+                                    href="https://refactoring.guru/design-patterns/iterator">The Iterator Pattern</a>
+                            </h5>
+                            <p>The iterator pattern is used to iterate over historical quotes of a stock and build a
+                                stringified JSON object. Also, the
+                                iterator() method of the CSVReader class within the Stock Database
+                                class (<a
+                                    href="https://github.com/austinjhunt/cyberbull/blob/master/src/main/java/edu/vanderbilt/cs/cyberbull/core/db/StockDB.java">StockDB</a>)
+                                is used to handle the iterative
+                                parsing of a static CSV file of the S&amp;P 500 stocks. This is the class the forms the
+                                underlying primary database of
+                                stocks for the application. <em>Note: it currently only includes the S&amp;P 500 Stocks
+                                    but can be extended.</em></p>
+                            <h3 id="now-the-functional-programming-">Now, the Functional Programming...</h3>
+                            <p>This project makes very heavy use of functional programming with streams, filters, tons
+                                of lambda expressions, and other
+                                items in this category. To provide some key examples:</p>
+                            <ul>
+                                <li>
+                                    <p>When making a trade (i.e. buying or selling a stock), Cyberbull uses functional
+                                        programming to quickly filter and
+                                        find out if there is already an existing open position for the stock being
+                                        bought
+                                        (or sold):</p>
+                                    <pre><code>// first determine <span class="hljs-keyword">if</span> we already have a <span class="hljs-keyword">position</span> for this symbol :)
+<span class="hljs-keyword">Optional</span>&lt;<span class="hljs-keyword">Position</span>&gt; positionOptional = account.getPortfolio().getPositions().stream().filter(
+        <span class="hljs-keyword">position</span>-&gt; <span class="hljs-keyword">position</span>.getStock().getSymbol().equals(symbol)
+).findFirst();
+</code></pre>
+                                </li>
+                                <li>To get the balance of a brokerage account, as mentioned above, we need the sum of
+                                    all of the total values of the
+                                    current open positions plus the core position (uninvested, sitting money) of the
+                                    account.</li>
+                            </ul>
+                            <pre><code><span class="hljs-variable">@Override</span>
+public double getBalance() {
+    <span class="hljs-selector-tag">return</span> <span class="hljs-selector-tag">this</span><span class="hljs-selector-class">.corePosition</span> + <span class="hljs-selector-tag">getPortfolio</span>()<span class="hljs-selector-class">.getPositions</span>()<span class="hljs-selector-class">.stream</span>()<span class="hljs-selector-class">.map</span>(<span class="hljs-attribute">Position</span>::getCurrentValue)<span class="hljs-selector-class">.reduce</span>(
+            <span class="hljs-number">0.0</span>, <span class="hljs-attribute">Double</span>::sum
+    ); <span class="hljs-comment">// uninvested + invested</span>
+}
+</code></pre>
+                            <ul>
+                                <li>To get a specific stock by a symbol from the Stock Database, Cyberbull streams the
+                                    list of SP500 stocks and filter
+                                    with a predicate asking if the current stock's symbol matches the input.</li>
+                            </ul>
+                            <pre><code><span class="hljs-function"><span class="hljs-keyword">public</span> Optional&lt;Stock&gt; <span class="hljs-title">getStock</span>(<span class="hljs-params">String symbol</span>)</span>{
+    <span class="hljs-keyword">return</span> sp500.stream().filter(
+            stock-&gt;stock.getSymbol().<span class="hljs-keyword">equals</span>(symbol)
+    ).findFirst();
+}
+</code></pre>
+                            <ul>
+                                <li>To quickly build a list of JSON objects representing key values of historical quotes
+                                    of a given stock, Cyberbull
+                                    streams the output of the visitor (there's a visitor for monthly history, daily
+                                    history, and weekly history) and add
+                                    the output of <code>buildQuoteJson(quote)</code> to a history list for each
+                                    historical quote object.</li>
+                            </ul>
+                            <pre><code><span class="hljs-keyword">public</span> ArrayList&lt;<span class="hljs-keyword">JSONObject</span>&gt; getMonthlyHistory(){
+    ArrayList&lt;<span class="hljs-keyword">JSONObject</span>&gt; history = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
+    MonthlyHistoryVisitor monthlyHistoryVisitor = <span class="hljs-keyword">new</span> MonthlyHistoryVisitor();
+    monthlyHistoryVisitor.visit(<span class="hljs-keyword">this</span>).stream().forEachOrdered(
+            quote-&gt;history.<span class="hljs-built_in">add</span>(buildQuoteJson(quote))
+    );
+    <span class="hljs-keyword">return</span> history;
+}
+</code></pre>
+                            <ul>
+                                <li>To get the total value of a given watch list (where a watch list is a collection of
+                                    stocks that you are interested in
+                                    but perhaps not invested in yet), we stream the stocks in the watchlist and use a
+                                    method reference to the
+                                    getCurrentPrice method of Stock, then use reduce to get the sum of the doubles.</li>
+                            </ul>
+                            <pre><code><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">double</span> <span class="hljs-title">getTotalValue</span><span class="hljs-params">()</span></span>{
+    <span class="hljs-keyword">return</span> <span class="hljs-keyword">this</span>.stocks.stream().<span class="hljs-built_in">map</span>(Stock::getCurrentPrice).reduce(<span class="hljs-number">0.0</span>, Double::sum);
+}
+</code></pre>
+                            <ul>
+                                <li>Here's a fun one. After you have built a series of brokerage accounts and have
+                                    invested in stocks across different
+                                    portfolios, the app does the following in order to collect a list of all of the
+                                    stocks you've invested in across your
+                                    accounts.</li>
+                            </ul>
+                            <pre><code><span class="hljs-type">List</span>&lt;<span class="hljs-type">Stock</span>&gt; allStocks = <span class="hljs-function"><span class="hljs-keyword">new</span> <span class="hljs-title">ArrayList</span>&lt;&gt;();
+<span class="hljs-title">dashboardService</span>.<span class="hljs-title">getBrokerageAccounts</span>().<span class="hljs-title">forEach</span>(
+    ba -&gt; ba.getPortfolio().<span class="hljs-title">getPositions</span>().<span class="hljs-title">forEach</span>(
+        p-&gt;allStocks.add(p.getStock())));</span>
+</code></pre>
+
+                        </div>
+                    </div>
                 </section>
             </div>
 
