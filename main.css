@@ -14,7 +14,7 @@ html {
   font-size: 1rem; }
 
 body {
-  font-family: "Roboto", "Helvetica Neue", Helvetica, sans-serif;
+  font-family: "Raleway", sans-serif;
   font-weight: 400;
   -webkit-font-smoothing: antialiased; }
 
@@ -164,7 +164,7 @@ strong {
 
 i,
 em {
-  font-weight: italic; }
+  font-weight: 400; }
 
 figure {
   margin: 0; }
@@ -187,9 +187,8 @@ small {
   max-width: 72rem;
   margin-right: auto;
   margin-left: auto;
-  padding-top: 10rem;
-  padding-right: 1rem;
-  padding-left: 1rem; }
+  padding: 1rem;
+  padding-top: 2rem; }
 
 .u-separate {
   margin-right: 0.45rem;
@@ -392,7 +391,7 @@ small {
   margin-bottom: 10rem; }
 
 .section-header {
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
   line-height: 1.5; }
 
 .c-archives__list {
