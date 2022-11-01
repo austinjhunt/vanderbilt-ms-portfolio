@@ -2148,12 +2148,12 @@ dashboardService.getBrokerageAccounts().forEach(ba ->
                                 <li>
                                     <p><a target="_blank"
                                             href="https://github.com/austinjhunt/vanderbiltcs6381-assignment3-PUBSUBQoS/blob/master/src/lib/backuppool.py">BackupPool.</a>
-                                        This class extends ZooKeeperClient. This is the first object that should be
+                                        This is the first object that should be
                                         created when spinning up a publish-subscribe system. This class represents a
                                         backup pool of dormant brokers that automatically promote themselves to
                                         leaders of new zones when the system's load threshold (defined with a
                                         <code>--load_threshold</code> parameter to the system) is exceeded by
-                                        current system load read from a Zookeeper Znode (which is shared by all brokers
+                                        current system load read from a Zookeeper znode (which is shared by all brokers
                                         for current load status updates via a watch mechanism). Backup pool brokers are
                                         not initially assigned a zone.
                                     </p>
