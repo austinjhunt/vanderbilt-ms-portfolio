@@ -2068,11 +2068,15 @@ dashboardService.getBrokerageAccounts().forEach(ba ->
                                 framework for spinning up a publish/subscribe system either on a single host or on a
                                 virtualized network with a tool like Mininet. It offers two main models of message
                                 dissemination, namely <strong>centralized dissemination</strong> in which a message
-                                broker
-                                forwards all messages
-                                from publisher to subscriber and decouples/anonymizes their communication, and
+                                broker forwards all messages from publisher to subscriber and decouples/anonymizes their
+                                communication, and
                                 <strong>decentralized dissemination</strong> in which a publisher and subscriber speak
-                                directly with each other after a broker matches them with each other.
+                                directly with each other after a broker matches them with each other. The original
+                                <strong>problem statement</strong> merely required that we define the base logic for
+                                creating publishers, subscribers, and brokers with some quality of service guarantees.
+                                However, as mentioned earlier in this portfolio, I love automating things, and building
+                                a framework to dynamically spin up these entities in a parameterized way made the most
+                                sense to me.
                             </p>
                             <p>
                                 It offers integrated performance / latency analysis by allowing you to configure
