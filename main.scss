@@ -275,14 +275,18 @@ small {
 }
 .c-page__header {
   margin-bottom: 4rem;
-}
-.c-page__header h1 {
-  margin-bottom: 1.8rem;
-  line-height: 1.5;
-  color: #163541;
-}
-.c-page__header p {
-  line-height: 1;
+  h1,
+  h2,
+  h3,
+  h4 {
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    font-weight: 400;
+    color: #163541;
+  }
+  p {
+    line-height: 1;
+  }
 }
 .c-page__footer {
   margin-bottom: 10rem;
