@@ -2390,7 +2390,7 @@ def spin_up_new_broker(self):
                                 </li>
                                 <li>
                                     <p>Create a backup pool process first that will auto-provision new broker zones
-                                        whena load threshold is met (in this case, 2 clients per zone where client is a
+                                        when a load threshold is met (in this case, 2 clients per zone where client is a
                                         publisher or subscriber). This will create a ZooKeeper znode
                                         <code>/shared_state/current_load</code> with value 0 since no publishers or
                                         subscribers are
