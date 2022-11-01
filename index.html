@@ -1778,7 +1778,7 @@ public class Dashboard {
     MonthlyHistoryVisitor visitor = new MonthlyHistoryVisitor();
     return visitor.visit(stock);
   }
-  public List<Article> getBusinessNews(String businessName){
+  public List&lt;Article&gt; getBusinessNews(String businessName){
     return newsManager.getBusinessNews(businessName);
   }
 }
