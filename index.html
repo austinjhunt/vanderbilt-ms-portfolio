@@ -2044,6 +2044,775 @@ dashboardService.getBrokerageAccounts().forEach(ba ->
                             </ul>
                         </div>
                     </div>
+                    <hr />
+                    <h3>Application of CS Concepts in Solving an Advanced Problem</h3>
+                    <hr />
+                    <div class="project">
+                        <div class="readme">
+                            <div class="center">
+                                <img src="img/pubsub-commands.png" class="w-75" />
+                                <h3><code>A Python Framework for Load-Balanced, Fault-Tolerant Publish/Subscribe Distributed Systems Built With ZeroMQ, an asynchronous messaging library and Apache Zookeeper, a distributed coordination service</code>
+                                </h3>
+                            </div>
+                            <p>This project, built in collaboration with <a
+                                    href="https://www.linkedin.com/in/guoliangding/" target="_blank">
+                                    Guoliang Ding
+                                </a> for CS-6381 (Distributed Systems) is the 3rd iteration of a Python framework for
+                                creating distributed publish/subscribe systems on virtualized networks. It builds on <a
+                                    target="_blank"
+                                    href="https://github.com/austinjhunt/vanderbiltcs6381-assignment2-ZOOKEEPER">this
+                                    project, the second
+                                    iteration</a>, which built on <a
+                                    href="https://github.com/austinjhunt/vanderbiltcs6381-assignment1-ZMQPUBSUB"
+                                    target="_blank">this project, the first iteration</a>. It offers a
+                                framework for spinning up a publish/subscribe system either on a single host or on a
+                                virtualized network with a tool like Mininet. It offers two main models of message
+                                dissemination, namely <strong>centralized dissemination</strong> in which a message
+                                broker
+                                forwards all messages
+                                from publisher to subscriber and decouples/anonymizes their communication, and
+                                <strong>decentralized dissemination</strong> in which a publisher and subscriber speak
+                                directly with each other after a broker matches them with each other.
+                            </p>
+                            <p>
+                                It offers integrated performance / latency analysis by allowing you to configure
+                                subscribers to write out latency data (between publishers and subscribers) to a provided
+                                filename, which provide insight about how long it takes for messages with specific
+                                topics from specific publishers to reach the subscriber (this is done by including the
+                                publish time in the message that gets sent).
+                            </p>
+                            <h3>Architecture Overview</h3>
+                            <p>
+                                The project is structured as a library of classes including:
+                            </p>
+                            <ul>
+                                <li>
+                                    <p>
+                                        <a href="https://github.com/austinjhunt/vanderbiltcs6381-assignment3-PUBSUBQoS/blob/master/src/lib/zookeeper_client.py"
+                                            target="_blank">
+                                            ZooKeeperClient.</a> This class is a superclass inherited by the others
+                                        providing basic Zookeeper client functionality, like clearing znodes, listening
+                                        for state changes, opening or closing a connection with a Zookeeper server,
+                                        starting or stopping a Zookeeper session, and creating, modifying, or getting
+                                        the value of a
+                                        znode.
+                                    </p>
+                                    <p></p>
+                                </li>
+                                <li>
+                                    <p><a target="_blank"
+                                            href="https://github.com/austinjhunt/vanderbiltcs6381-assignment3-PUBSUBQoS/blob/master/src/lib/backuppool.py">BackupPool.</a>
+                                        This class extends ZooKeeperClient. This is the first object that should be
+                                        created when spinning up a publish-subscribe system. This class represents a
+                                        backup pool of dormant brokers that automatically promote themselves to
+                                        leaders of new zones when the system's load threshold (defined with a
+                                        <code>--load_threshold</code> parameter to the system) is exceeded by
+                                        current system load read from a Zookeeper Znode (which is shared by all brokers
+                                        for current load status updates via a watch mechanism). Backup pool brokers are
+                                        not initially assigned a zone.
+                                    </p>
+                                </li>
+                                <li>
+                                    <p><a target="_blank"
+                                            href="https://github.com/austinjhunt/vanderbiltcs6381-assignment3-PUBSUBQoS/blob/master/src/lib/broker.py">Broker.</a>
+                                        This class is used to create a message broker
+                                        to serve as middleware between publishers and subscribers (with optional
+                                        anonymization depending on whether the
+                                        system is configured for centralized or decentralized message dissemination,
+                                        represented by a
+                                        boolean variable <code>centralized</code>).
+                                    </p>
+                                </li>
+                                <li>
+                                    <p><a href="https://github.com/austinjhunt/vanderbiltcs6381-assignment3-PUBSUBQoS/blob/master/src/lib/publisher.py"
+                                            target="_blank">Publisher.</a> This class represents a single publisher in
+                                        a Publish/Subscribe distributed
+                                        system. A publisher does not need to know who is consuming the information; it
+                                        simply publishes information independently of the consumer. If the publisher has
+                                        no connected subscribers, it will drop all messsages it produces; note that a
+                                        "subscriber" can be a Subscriber instance or a Broker instance.</p>
+                                </li>
+                                <li>
+                                    <p><a href="https://github.com/austinjhunt/vanderbiltcs6381-assignment3-PUBSUBQoS/blob/master/src/lib/subscriber.py"
+                                            target="_blank">Subscriber.</a> This class represents a single subscriber in
+                                        a Publish/Subscribe distributed system.
+                                        A subscriber is indifferent to who is disseminating the information, as long as
+                                        it
+                                        knows their address(es). Subscriber can subscribe to specific topics and will
+                                        listen for
+                                        relevant updates about those topics across all publisher connections. If there
+                                        are many publishers with relevant updates for a given topic T, the subscriber
+                                        will only receive messages produced by the
+                                        publisher who owns that topic (i.e. the one who started publishing about T
+                                        first).</p>
+                                </li>
+                            </ul>
+                            <p>
+                                These classes are instantiated by the framework's <a
+                                    href="https://github.com/austinjhunt/vanderbiltcs6381-assignment3-PUBSUBQoS/blob/master/src/driver.py"
+                                    target="_blank">driver</a>, which is the main gateway for the framework. A user who
+                                wants to spin up a publish/subscribe system executes the driver while passing it
+                                arguments that define things like
+                                which entity to create (from the above options), how many of that entity to create, the
+                                address of the host running the ZooKeeper service,
+                                the file path to which consumed messages should be written (if spinning up a
+                                subscriber), the value to use for the system load threshold (beyond which new brokers
+                                are provisioned automatically), the zone number (to which the entity being spun up
+                                should be assigned), the topics to either publish or subscribe to (if spinning up a
+                                publisher or subscriber), and more.
+                            </p>
+                            <p>The below code snippet is executed by the driver if you pass the
+                                "<code>--subscriber N</code>" argument, where N is the number of subscribers you want
+                                to
+                                generate.
+                            </p>
+                            <pre class="code-snippet"><code>
+subscribers = create_subscribers(
+    # how many to create 
+    count=args.subscriber,  
+    # optionally write consumed messages to a file
+    filename=args.filename if args.filename else None,  
+    # address of the broker (create broker first); (default=127.0.0.1)
+    broker_address=args.broker_address,  
+    # centralized or decentralized dissemination
+    centralized=args.centralized,  
+    # topics to subscribe to
+    topics=args.topics,  
+    # whether to run indefinitely
+    indefinite=args.indefinite,  
+    # how many "rounds" if not indefinite, (default=15)
+    max_event_count=args.max_event_count if args.max_event_count else 15,  
+    # ip address of host running zookeeper, structured as list 
+    zookeeper_hosts=args.zookeeper_hosts,
+    # whether to log verbosely
+    verbose=args.verbose,
+    # the sliding window length to request from publishers
+    requested=args.history
+)
+                            </code></pre>
+                            <p>Similarly, the below code snippet is executed by the driver if you pass the
+                                "<code>--publisher N</code>" argument, where N is the number of publishers you want
+                                to generate.
+                            </p>
+                            <pre class="code-snippet"><code>
+publishers = create_publishers(
+    # how many to create 
+    count=args.publisher,
+    # address of message broker (create broker first); (default=127.0.0.1)
+    broker_address=args.broker_address,
+    # topics to publish 
+    topics=args.topics,
+    # how long to sleep before each publish
+    sleep_period=args.sleep if args.sleep else 1,
+    # port on which to publish messages (used by subscriber or broker)
+    bind_port=args.bind_port if args.bind_port else 5556,
+    # whether to publish indefinitely
+    indefinite=args.indefinite,
+    # how many rounds if not indefinite, (default=15)
+    max_event_count=args.max_event_count if args.max_event_count else 15,
+    # ip address of host running zookeepr, structured as list 
+    zookeeper_hosts=args.zookeeper_hosts,
+    # whether to log verbosely
+    verbose=args.verbose,
+    # the sliding window length offered to subscribers. 
+    offered=args.history,
+)
+### NOTE: publisher is indifferent to dissemination strategy 
+### (centralized boolean is not passed as argument)
+</code></pre>
+                            <p>The following code snippet gets executed by the driver if you pass
+                                the "<code>--broker 1</code>" argument. You can only create one broker at a
+                                time with the driver so you must use 1 as the argument.
+                            </p>
+                            <pre class="code-snippet"><code>
+create_brokers(
+    # whether centralized or decentralized dissemination
+    centralized=args.centralized,
+    # on which port to receive publisher registration (default=5555)
+    pub_reg_port=args.pub_reg_port,
+    # on which port to receive subscriber registration (default=5556)
+    sub_reg_port=args.sub_reg_port,
+    # whether to run indefinitely 
+    indefinite=args.indefinite,
+    # if not indefinite, how many messages to broker (default=15)
+    max_event_count=args.max_event_count if args.max_event_count else 15,
+    # number of seconds after which to autokill broker 
+    # (for testing leader election with multiple brokers / fault tolerance)
+    # default = None 
+    autokill=autokill,
+    # ip address of host running zookeeper, structured as list 
+    zookeeper_hosts=args.zookeeper_hosts,
+    # whether to log verbosely 
+    verbose=args.verbose,
+    # whether to use broker as primary replica. If false,
+    # runs in background as backup, promotable by load balancer to primary. 
+    primary=args.primary,
+    # zone to which broker gets assigned (for fault tolerance in that 
+    # zone)
+    zone=args.zone
+)
+</code></pre>
+
+                            <p>Lastly, the driver executes the following code snippet if you pass the argument
+                                "<code>--backup</code>". This will create a BackupPool process that auto-creates new
+                                zones for load balancing when system load meets the <code>--load_threshold</code> value
+                                (the default
+                                load threshold is 3, where the formula for current system load is
+                                <code>(publishers + subscribers) / (zones)</code>).
+                            </p>
+                            <pre class="code-snippet"><code>        
+backup_pool = BackupPool(
+    # ip address of host running zookeeper, formatted as list 
+    zookeeper_hosts=args.zookeeper_hosts,
+    # whether system is using centralized or decentralized dissemination
+    centralized=args.centralized,
+    # whether to run indefinitely 
+    indefinite=args.indefinite,
+    # if not indefinite, max number of rounds to listen for state change of 
+    # primary 
+    max_event_count=args.max_event_count if args.max_event_count else 15,
+    # whether to log verbosely 
+    verbose=args.verbose,
+    # the load threshold for the system 
+    threshold=args.load_threshold,
+)
+backup_pool.watch_system_load() # implementation below
+backup_pool.wait_for_trigger() # implementation below
+.... 
+def wait_for_trigger(self):
+        while True:
+            time.sleep(0.5) 
+.... 
+def watch_system_load(self):
+@self.zk.DataWatch(self.current_load_znode)
+def dump_data_change (data, stat, event):
+    if not event:
+        pass
+    elif event.type == 'CHANGED':
+        # Load has been updated by a broker
+        self.debug('System load has changed!')
+        if self.need_more_capacity():
+            self.debug('Need more capacity!')
+            self.spin_up_new_broker() # implementation below
+.... 
+
+def spin_up_new_broker(self):
+    self.debug('Spinning up a new broker!')
+    new_zone = self.get_new_zone_number()
+    broker = Broker(
+        centralized=self.centralized,
+        indefinite=self.indefinite,
+        max_event_count=self.max_event_count,
+        zookeeper_hosts=self.zookeeper_hosts_arg,
+        verbose=self.verbose,
+        zone=new_zone
+    )
+    # Create a new zone managed by this new primary broker
+    broker.connect_zk()
+    broker.start_session()
+    broker.setup_fault_tolerance_znode()
+    broker.setup_shared_state_znode()
+    broker.setup_load_balancing_znode()
+    broker.watch_shared_state_publishers()
+    broker.watch_shared_state_subscribers()
+    # FIXME: this is going to block! Will this spin up only work for one broker?
+    self.debug(f'Running election for new broker {id(broker)}')
+    broker.zk_run_election() 
+                            </code></pre>
+
+                            <h3>Example Publish Subscribe System</h3>
+                            <p>You can find a visual demonstration of an example publish subscribe system created with
+                                this framework on my YouTube channel <a
+                                    href="https://www.youtube.com/watch?v=a9ziTc_xPyA" target="_blank">here.</a> To give
+                                a written overview, these are the steps taken (for creating a publish subscribe system
+                                that uses the
+                                centralized dissemination strategy for anonymization of publishers and subscribers via
+                                message brokers):</p>
+                            <ol>
+                                <li>
+                                    <p>Ensure a ZooKeeper service is running on some host that is accessible from the
+                                        current environment. In the case of this example, ZooKeeper is running on
+                                        localhost port 2181 (127.0.0.1:2181).</p>
+                                </li>
+                                <li>
+                                    <p>Create a backup pool process first that will auto-provision new broker zones
+                                        whena load threshold is met (in this case, 2 clients per zone where client is a
+                                        publisher or subscriber). This will create a ZooKeeper znode
+                                        <code>/shared_state/current_load</code> with value 0 since no publishers or
+                                        subscribers are
+                                        running yet.
+                                    </p>
+                                    <pre class="code-snippet"><code>
+python3 driver.py --load_threshold 2 --backup --verbose \
+    --indefinite --zookeeper_hosts 127.0.0.1:2181 
+                                        </code></pre>
+                                </li>
+                                <li>
+                                    <p>Create broker 1 that will use the centralized dissemination strategy and assign
+                                        it to zone 2. This broker will immediately become the
+                                        primary, or leader, broker for zone 2 since that zone doesn't exist yet.
+                                    </p>
+                                    <pre class="code-snippet"><code>
+python3 driver.py --broker 1 --zookeeper_hosts 127.0.0.1:2181 \
+    --zone 2 --verbose --indefinite --centralized 
+                                        </code></pre>
+                                    <p>This broker, once created, sets a new value on the
+                                        <code>/shared_state/current_load</code> znode (still 0.0 since there are no
+                                        publishers or subscribers yet). When that happens, the BackupPool detects the
+                                        change but does not do anything since system load is still below threshold 2. In
+                                        fact, we've added capacity, not load, by adding a zone. Capacity of the system
+                                        is represented by the zones (denominator); load is represented by publishers or
+                                        subscribers. Broker 1 now begins an event loop (listening for new registrations
+                                        or messages).
+                                    </p>
+                                </li>
+                                <li>
+                                    <p>Create a subscriber to topic A (Subscriber 1) configured for centralized
+                                        dissemination. Use
+                                        --history 3 to configure a requested history, or sliding window size, of 3
+                                        messages. Publishers whose offered value is smaller will not satisfy this
+                                        request.</p>
+                                    <pre class="code-snippet"><code>
+python3 driver.py --subscriber 1 --topics A --history 1 --zookeeper_hosts 127.0.0.1:2181 \ 
+    --verbose --indefinite --centralized 
+                                    </code></pre>
+                                    <p>Once created, Subscriber 1 is randomly assigned to an existing zone. Zone 2 is
+                                        the only zone currently. The subscriber registers with the primary broker for
+                                        that zone. It sends a registration message basically identifying itself (its
+                                        address, its id, the topics to which it subscribes, and its requested history
+                                        size). When Broker 1 registersSubscriber 1, it updates the
+                                        <code>/shared_state/current_load</code> znode which notifies the BackupPool. We
+                                        now have one client and one zone, so the load is 1.0. Broker 1 also added a
+                                        znode with Subscriber 1's identifying info as a child of the shared state
+                                        <code>/shared_state/subscribers</code> znode, which all brokers watch along with
+                                        a similar <code>/shared_state/publishers</code> znode to keep matchmaking data
+                                        synchronized.
+                                    </p>
+                                </li>
+                                <li>
+                                    <p>Now we begin to achieve fault tolerance. Create Broker 2, and assign it to zone 2
+                                        with the centralized dissemination strategy.</p>
+                                    <pre class="code-snippet"><code>
+python3 driver.py --broker 1 --zookeeper_hosts 127.0.0.1:2181 \ 
+    --zone 2 --verbose --indefinite --centralized
+                                    </code></pre>
+                                    <p>The broker enters an election for zone 2 to become a leader of that zone when the
+                                        current primary dies. That primary is running indefinitely without autokill
+                                        turned on so we will need to CTRL+C to kill it in order to test the re-election.
+                                    </p>
+                                    <p>As mentioned previously, all brokers watch a collection of shared state Zookeeper
+                                        znodes to keep their matchmaking data synchronized; when this new broker (as
+                                        when any new broker) gets created, it acknowledges and saves information about
+                                        the existing clients; that is, it stores the identifying information about
+                                        publishers and subscribers in local dictionaries to help with matchmaking newly
+                                        registered clients with pre-existing ones. Also, current load is still 1.0 since
+                                        we only have 1 client and 1 zone (zone 2 has two brokers).</p>
+                                </li>
+                                <li>
+                                    <p>Create a subscriber to topic B (Subscriber 2) configured for centralized
+                                        dissemination. </p>
+                                    <pre class="code-snippet"><code>
+python3 driver.py --subscriber 1 --topics B --indefinite --verbose \ 
+    --zookeeper_hosts 127.0.0.1:2181 --centralized
+                                    </code></pre>
+                                    <p>Once created, Subscriber 2 is randomly assigned to an existing zone. Zone 2 is
+                                        the only zone currently. The subscriber registers with the primary broker for
+                                        that zone (Broker 1). It sends a registration message identifying itself (its
+                                        address, its id, the topics to which it subscribes, and its requested history
+                                        size). When Broker 1 registers Subscriber 2, it updates the
+                                        <code>/shared_state/current_load</code> znode which notifies the BackupPool. We
+                                        now have two clients and one zone, so the load is 2.0. Broker 1 also added a
+                                        znode with Subscriber 2's identifying info as a child of the shared state
+                                        <code>/shared_state/subscribers</code> znode, which Broker 2 acknowledges and
+                                        saves locally to keep its own matchmaking data synchronized. Note that neither
+                                        subscriber is actually consuming anything since no one is publishing messages
+                                        yet.
+                                    </p>
+                                </li>
+                                <li>
+                                    <p>Now create a new centralized dissemination broker (Broker 3) and assign it to
+                                        zone 1. This
+                                        will decrease system load back to 1.0 (2 clients / 2 zones = 1.0).</p>
+                                    <pre class="code-snippet"><code>
+python3 driver.py --broker 1 --zookeeper_hosts 127.0.0.1:2181 \
+    --verbose --zone 1 --indefinite --centralized
+                                    </code></pre>
+                                    <p>Since zone 1 did not exist before this broker, Broker 3 is now the primary for
+                                        zone 1. Broker 3 has updated the value of the
+                                        <code>/shared_state/current_load</code> znode to 1.0.
+                                    </p>
+                                </li>
+                                <li>
+                                    <p>Now create a publisher of topic A. This will be Publisher 1.</p>
+                                    <pre class="code-snippet"><code>
+python3 driver.py --publisher 1 --topics A --indefinite \ 
+    --verbose --zookeeper_hosts 127.0.0.1:2181 
+                                    </code></pre>
+                                    <p>The publisher gets randomly assigned to Zone 1 (of the two Zones), and thus
+                                        registers with the
+                                        primary of Zone 1 (Broker 3), passing its identifying information during
+                                        registration. Broker 3 subscribes to Publisher 1 and updates the
+                                        <code>/shared_state/publishers</code> znode with the information of this new
+                                        publisher, and the other brokers (1 and 2) in the system (who are watching that
+                                        znode) update their local information to include that publisher's information.
+                                        The system load is now 1.5 (2 subs + 1 pub / 2 zones = 3 / 2 = 1.5).
+                                    </p>
+                                    <p>The publisher begins publishing messages for topic A, but nothing else happens in
+                                        the system. This is because the one subscriber to topic A in the system is
+                                        requesting a history (sliding window size) of 3, but the publisher is only
+                                        offering a size of 1 by default since no argument was passed for that setting.
+                                        Thus, it cannot support the request of the Topic A subscriber. In other words,
+                                        this publisher's messages are currently not going any farther than Broker 3 in
+                                        Zone 1 (they're being ignored). To address this, we can kill Publisher 1 with
+                                        CTRL+C, and restart it with a history argument value of 5. When it's killed, it
+                                        unregisters from the system and the shared state system load value drops back to
+                                        1.0.
+
+                                    </p>
+                                    <pre class="code-snippet"><code>
+python3 driver.py --publisher 1 --topics A --indefinite \ 
+    --verbose --zookeeper_hosts 127.0.0.1:2181 --history 5
+                                    </code></pre>
+                                    <p>Now, Publisher 1 re-registers (once again with Broker 3 who is primary for Zone
+                                        1), and the shared state system load value re-increases back to 1.5. Broker 3
+                                        also realizes that the topic A which Publisher 1 is publishing has a subscriber:
+                                        Subscriber 1. So, it starts to relay the messages it is consuming from Publisher
+                                        1 over to Subscriber 1. The subscriber sees the publisher as the broker, because
+                                        the broker as the middleware is anonymizing the publishing and subscription.</p>
+                                </li>
+                                <li>
+                                    <p>Now create a new publisher (Publisher 2) for topic B with an offered history size
+                                        of 3.</p>
+                                    <pre class="code-snippet"><code>
+python3 driver.py --publisher 1 --topics B --indefinite \ 
+        --verbose --zookeeper_hosts 127.0.0.1:2181 --history 3
+                                        </code></pre>
+                                    <p>Publisher 2 gets randomly assigned to Zone 2 whose primary is still Broker 1.
+                                        Publisher 2 registers with Broker 1 as normal, and Broker 1 updates the
+                                        <code>/shared_state/publishers</code> znode with Publisher 2's information
+                                        (which is acknowledged and saved by the other Brokers in the system). Broker 1
+                                        also updates the system load znode to 2.0 (2 pubs + 2 subs / 2 zones = 4 / 2 =
+                                        2.0). We see now that Subscriber 2, subscribed to topic B, begins consuming
+                                        Publisher 2's topic B messages because Subscriber 2 is requesting only a history
+                                        size of 1 (default), and Broker 1 has "made their match" based on their topic
+                                        and offer/request relationship.
+                                    </p>
+                                </li>
+                                <li>
+                                    <p>Now let's test the topic ownership feature. Kill off Publisher 2. The
+                                        publisher will unregister and the system load will drop to 1.5 again. Now
+                                        re-create it but change its topic to A instead of B such that we have two
+                                        publishers publishing messages of topic A.</p>
+                                    <pre class="code-snippet"><code>
+python3 driver.py --publisher 1 --topics A --indefinite \ 
+    --verbose --zookeeper_hosts 127.0.0.1:2181 --history 3
+                                        </code></pre>
+                                    <p>Publisher 2 will once again register; this time it registers with Broker 3 who is
+                                        primary of Zone 1. Broker 3 subscribes to Publisher 2 and updates the shared
+                                        state values (load is once again 2.0) which is acknowledged and saved by the
+                                        other brokers. However, Publisher 2 knows by reading a Zookeeper znode that
+                                        another publisher already owns topic A (it's locked), and thus it does not
+                                        publish any messages about the topic. Instead, it logs "I do not have priority
+                                        for A"; it will do this until that lock is released or it is killed.
+                                        Knowing this, let's now kill and re-register Publisher 2 as a publisher of topic
+                                        B again.
+                                    <pre class="code-snippet"><code>
+python3 driver.py --publisher 1 --topics B --indefinite \ 
+    --verbose --zookeeper_hosts 127.0.0.1:2181 --history 3
+                                </code></pre>
+                                    It registers with Broker 3, primary of Zone 1, and system load comes back to 2.0
+                                    (2 subs, 2 pubs, 2 zones).
+                                    </p>
+                                </li>
+                                <li>
+                                    <p>Now let's test automatic provisioning of new zones and brokers triggered by
+                                        system overload. Adding one additional client (a pub or sub) should push the
+                                        system over the threshold of 2.</p>
+                                    <pre class="code-snippet"><code>
+python3 driver.py --subscriber 1 --topics B --indefinite \ 
+        --verbose --zookeeper_hosts 127.0.0.1:2181 --centralized
+                                        </code></pre>
+                                    <p>
+                                        A new subscriber (Subscriber 3) is now spun up. It registers with Broker 1,
+                                        primary of Zone 2. Broker 1 updates the shared state with the Subscriber 3's
+                                        information, and updates the shared system load state value to 2.5 (3 subs + 2
+                                        pubs / 2 zones = 2.5). The BackupPool reads this change, compares it to the
+                                        system load
+                                        threshold (it's higher!), and then automatically provisions a new zone (Zone 3)
+                                        with a new primary broker (Broker 4); this reduces the system load back down to
+                                        2 (3 subs + 2 pubs / 3 zones = 5 / 3 = 1.667), which it saves to the
+                                        <code>/shared_state/current_load</code>. The logs from the new broker are
+                                        printed to standard output in the same window as the BackupPool since that is
+                                        the process that spawned the new broker. Now, any new client (pub or sub) will
+                                        have one additional possible zone to be randomly assigned to for broker
+                                        communication (with options of zone 1, zone 2, and zone 3). Note that when this
+                                        BackupPool auto-provisioned the new broker (Broker 4), it read all of the
+                                        existing brokers' shared state, pulled in all of their collective matchmaking
+                                        data, and handed it to the new broker to ensure it was synchronized as a new
+                                        member of the system.
+                                    </p>
+                                </li>
+                            </ol>
+                            <h3>How does this project extend on iteration 2?</h3>
+                            <p>
+                                The previous project (iteration 2) extended the first by adding in Apache ZooKeeper for
+                                distributed coordination. Specifically, it used <strong>kazoo</strong>, a Python library
+                                for ZooKeeper,
+                                to handle <strong>multi-broker</strong> pub/sub with <strong>warm passive</strong>
+                                replication between brokers. The ZooKeeper usage was completely transparent, meaning if
+                                you used one broker, the project
+                                functions exactly the same as the first (which did not use ZooKeeper and was only
+                                functional with one broker). If you use multiple brokers in iteration 2, and one broker
+                                fails, ZooKeeper enables all publishers and subscribers to continue functioning as
+                                though nothing happened by simply electing the next available broker as the leader.
+                            </p>
+                            <p>
+                                This project focuses on adding Quality of Service properties to the framework, and
+                                extends on iteration 2 in <strong>three primary ways</strong>:
+                            </p>
+                            <ol>
+                                <li>
+                                    <p><strong>Load balancing</strong> in addition to fault tolerance. In the second
+                                        iteration, we
+                                        used Zookeeper for
+                                        fault tolerance using the primary-backup scheme without caring about the load on
+                                        the
+                                        primary broker. Now, we introduce load balancing such that there can be multiple
+                                        primary
+                                        broker replicas that each handle requests from clients (a client is a publisher
+                                        or a
+                                        subscriber). Each message broker that gets created gets assigned to a
+                                        <strong>zone</strong>.
+                                        The
+                                        first broker assigned to a zone becomes its primary broker (or "leader"), then
+                                        any
+                                        additional brokers assigned to that zone become "contenders" for leadership in
+                                        that
+                                        zone, so each zone has one primary leader broker and a set of backup brokers
+                                        that step
+                                        in if the current primary fails (thus, each zone has its own <strong>fault
+                                            tolerance</strong>). Load
+                                        is balanced across zones by <strong>randomly</strong> assigning clients (pubs
+                                        and subs) to
+                                        one of
+                                        the available zones at the time of creation. Ex: if there are 3 zones, each with
+                                        a
+                                        primary broker as its leader, and I create a publisher, that publisher gets
+                                        randomly
+                                        assigned to one of those 3 zones. A <strong>Backup</strong> process keeps track
+                                        of the current
+                                        system
+                                        load (defined as <strong>(number of publishers + number of subscribers) /
+                                            (number of
+                                            zones)</strong>),
+                                        AKA <strong>clients per zone</strong> as it relates to a user-defined threshold.
+                                        When the load
+                                        exceeds
+                                        the user-defined threshold, a new broker gets created and added to a brand new
+                                        zone for
+                                        more distributed load balancing, and new clients include the new zone in the
+                                        random zone
+                                        assignment decision.
+                                    </p>
+                                </li>
+                                <li>
+                                    <p><strong>Ownership strength.</strong> In the first iterations, if we had more
+                                        than one publisher
+                                        publishing the same topic T, then all the events from all of those publishers
+                                        would get
+                                        relayed to the subscribers subscribed to topic T. Now, we introduce a measure of
+                                        topic
+                                        ownership for publishers, so that only messages about topic T from the publisher
+                                        with
+                                        the highest ownership strength over that topic T are relayed to the interested
+                                        subscribers. The first publisher to publish about a topic becomes the owner for
+                                        that
+                                        topic by acquiring an Apache Zookeeper lock representing that topic. Any other
+                                        publisher
+                                        that tries to publish about that topic will not be able to until that lock is
+                                        released,
+                                        which happens when the first publisher process ends, intentionally or not.</p>
+                                </li>
+                                <li>
+                                    <p><strong>History.</strong> In the first iterations, when a publisher of topic T
+                                        and a subscriber to topic T registered with a broker, that publisher and that
+                                        subscriber were
+                                        matched based on that topic T, and the subscriber would receive all messages
+                                        about topic T, one at a time, as the publisher published those messages. Now, we
+                                        introduce a new requirement
+                                        that the last N messages published about a topic T be preserved in a sliding
+                                        window
+                                        fashion, and a subscriber to T can only receive messages from a publisher of T
+                                        if
+                                        the
+                                        subscriber requests some number of messages less than or equal to the size of
+                                        that
+                                        sliding window offered by the publisher. In other words, the publisher's
+                                        "offered"
+                                        historical window of messages MUST be greater than or equal to the subscriber's
+                                        "requested" number of historical messages. If a publisher maintains the last 10
+                                        samples
+                                        of topic T while a subscriber wants the last 20 samples of topic T, then this
+                                        subscriber
+                                        cannot get the data even though the topic of interest is common, because the
+                                        "offered vs
+                                        requested" dominance relationship is not satisfied.</p>
+                                </li>
+                            </ol>
+                            <h3>How is ZooKeeper used?</h3>
+                            <div class="center">
+                                <img src="img/pubsub-architecture.jpg" class="w-75" />
+                            </div>
+                            <ul>
+                                <li>
+                                    <h4>Leader Election</h4>
+                                    <p>
+                                        In iteration 2, there was only Zookeeper broker election observed by
+                                        the brokers to achieve fault tolerance. This used an <code>/electionpath</code>
+                                        with ZooKeeper. The first broker to get created won the election immediately and
+                                        became the leader, and any subsequent brokers would become contenders for the
+                                        leadership by entering the <code>/electionpath</code> election and waiting for
+                                        the current leader to fail (those savages!). Now, with the load balancing model,
+                                        we have multiple zones that <strong>each have their own broker
+                                            elections</strong>. So instead of elections being managed with
+                                        a single <code>/electionpath</code> znode, elections are now managed per-zone,
+                                        with
+                                        <code>/elections/zone_ZONENUMBER</code>. Within a
+                                        given zone, the leader election happens
+                                        the same way as before. When you create a broker, you assign it to a zone.
+                                        If it's the first broker assigned to that zone, the zone-related znodes are
+                                        initialized (including that election znode) and that broker becomes the
+                                        zone's primary, or leader. If you assign a broker to a zone that already has
+                                        a primary, it will enter the election for that zone and wait for the zone's
+                                        primary to fail as a contender in the zone's leader election. The contenders are
+                                        the backups, so this provides fault tolerance for each zone in the system, and
+                                        thus for the system as a whole.
+                                    </p>
+                                </li>
+
+                                <li>
+                                    <h4>Shared State</h4>
+                                    <p>
+                                        We also now use ZooKeeper to maintain shared state across all of the brokers,
+                                        particularly for the synchronization of matchmaking data. Why did we do this?
+                                        Well, assume we hadn't. Now, imagine a publisher of Topic A with an offered
+                                        history of 5 gets created and is randomly assigned to zone 3, which means it
+                                        registers with zone 3's primary broker. Then, a subscriber to Topic A with a
+                                        requested history of 2 gets created and is randomly assigned to zone 1.
+                                        Regardless of centralized vs decentralized dissemination, without shared state
+                                        across the brokers in the different zones, the subscriber would not know about
+                                        the publisher even though it publishes its topic of interest and satisfies the
+                                        offered vs requested dominance relationship. So, here's how the shared state
+                                        works:
+                                    </p>
+                                    <ol>
+                                        <li>
+                                            <p>
+                                                Each broker watches a <code>/shared_state/publishers</code> znode with
+                                                <code>@ChildrenWatch</code> to monitor for additions or removals of
+                                                publishers by any of the other brokers, regardless of zone. When the
+                                                children change, the watch triggers and the broker updates it internal
+                                                matchmaking data to reflect the global shared state.
+                                            </p>
+                                        </li>
+                                        <li>
+                                            <p>
+                                                Each broker watches a <code>shared_state/subscribers</code> znode with
+                                                <code>@ChildrenWatch</code> to monitor for additions or removals of
+                                                subscribers by any of the other brokers, regardless of zone. When the
+                                                children change, the watch triggers and the broker updates it internal
+                                                matchmaking data to reflect the global shared state.
+                                            </p>
+
+                                        </li>
+                                        <li>
+                                            <p>Once a publisher gets randomly assigned to a zone on creation, it
+                                                registers
+                                                with that zone's primary broker, at which point the broker adds a znode
+                                                named with the publisher's ID as a child of the
+                                                <code>/shared_state/publishers</code> znode, with JSON containing the
+                                                publisher's ID (str), Topics (list), Offered (int), and Address (str)
+                                            </p>
+                                        </li>
+                                        <li>
+                                            <p>
+                                                Once a subscriber gets randomly assigned to a zone on creation, it
+                                                registers with that zone's primary broker, at which point the broker
+                                                adds a znode named with the subscriber's ID as a child of the
+                                                <code>/shared_state/subscribers</code> znode, with JSON containing the
+                                                subscriber's ID (str), Topics (list), Offered (int), and Address (str)
+                                            </p>
+                                        </li>
+                                        <li>
+                                            <p> When a publisher disconnects, it tells the broker before disconnecting,
+                                                and
+                                                the broker removes its respective znode from the children of the
+                                                <code>/shared_state/publishers</code> znode
+                                            </p>
+
+                                        </li>
+                                        <li>
+                                            <p>
+                                                When a subscriber disconnects, it tells the broker before disconnecting,
+                                                and the broker removes its respective znode from the children of the
+                                                <code>/shared_state/subscribers</code> znode
+                                            </p>
+                                        </li>
+                                    </ol>
+                                    <p> This allows the brokers in the various load-balanced zones to know about a
+                                        global state across all of the zones so that cross-zone matchmaking between
+                                        publishers and subscribers can still work.
+                                    </p>
+                                </li>
+                                <li>
+                                    <h4>Load Monitoring and Auto-Broker Provisioning</h4>
+                                    <p>In order to achieve dynamic scaling according to system load, we use another
+                                        ZooKeeper znode called <code>/shared_state/current_load</code>. Here's how it is
+                                        used:</p>
+                                    <ol>
+                                        <li>
+                                            <p>We have a BackupPool process that watches this znode for data changes
+                                                with @DataWatch. When it changes, if the value of the znode (the current
+                                                system load) is greater than a user defined threshold passed to the the
+                                                Backup Pool process, then provision, configure, and start a new broker
+                                                as <strong>the primary of a brand new zone</strong>.</p>
+                                        </li>
+                                        <li>
+                                            <p>Whenever a new publisher or a subscriber registers OR disconnects with
+                                                any
+                                                broker in any zone, update <code>/shared_state/current_load</code> to
+                                                reflect the current value of the following formula: (num_publishers +
+                                                num_subscribers) /
+                                                (num_zones). Generally speaking, registration means load increase,
+                                                disconnection means load decrease.</p>
+                                        </li>
+                                    </ol>
+                                </li>
+                                <li>
+                                    <h4>Watch Event</h4>
+                                    <p>In iteration 2, each publisher and subscriber set a watch on the znode
+                                        /broker which would store the information about the current leader, or primary,
+                                        broker, which most recently won the <code>/electionpath</code> election. Now, as
+                                        we have made
+                                        the elections zone-specific with <code>/elections/zone_ZONENUMBER</code> znodes,
+                                        we have also made
+                                        this primary broker info storage zone specific, since each zone has its own
+                                        primary, or leader. So instead of writing its information to /broker when a
+                                        broker becomes a zone leader, it writes its information to
+                                        <code>/primaries/zone_ZONENUMBER</code> when it becomes a zone leader. In
+                                        return, the publishers and
+                                        subscribers, after getting randomly assigned to a zone on creation,
+                                        begin watching their respective <code>/primaries/zone_ZONENUMBER</code> to
+                                        obtain the most
+                                        updated information about their current broker leader. If it
+                                        changes, that means the previous primary/leader broker has died or
+                                        has been manually terminated and they register with the next broker
+                                        contender who wins the zone's election.
+                                    </p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
                 </section>
             </div>
 
