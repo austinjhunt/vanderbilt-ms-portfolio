@@ -2071,12 +2071,7 @@ dashboardService.getBrokerageAccounts().forEach(ba ->
                                 broker forwards all messages from publisher to subscriber and decouples/anonymizes their
                                 communication, and
                                 <strong>decentralized dissemination</strong> in which a publisher and subscriber speak
-                                directly with each other after a broker matches them with each other. The original
-                                <strong>problem statement</strong> merely required that we define the base logic for
-                                creating publishers, subscribers, and brokers with some quality of service guarantees.
-                                However, as mentioned earlier in this portfolio, I love automating things, and building
-                                a framework to dynamically spin up these entities in a parameterized way made the most
-                                sense to me.
+                                directly with each other after a broker matches them with each other.
                             </p>
                             <p>
                                 It offers integrated performance / latency analysis by allowing you to configure
@@ -2084,6 +2079,14 @@ dashboardService.getBrokerageAccounts().forEach(ba ->
                                 filename, which provide insight about how long it takes for messages with specific
                                 topics from specific publishers to reach the subscriber (this is done by including the
                                 publish time in the message that gets sent).
+                            </p>
+                            <h3>Problem Statement</h3>
+                            <p>The original problem statement merely required that we define the base logic for
+                                creating publishers, subscribers, and brokers with some quality of service guarantees
+                                using ZooKeeper.
+                                However, as mentioned earlier in this portfolio, I love automating things, and building
+                                a framework to dynamically spin up these entities in a parameterized way made the most
+                                sense to me.
                             </p>
                             <h3>Architecture Overview</h3>
                             <p>
@@ -2165,6 +2168,8 @@ dashboardService.getBrokerageAccounts().forEach(ba ->
                                 should be assigned), the topics to either publish or subscribe to (if spinning up a
                                 publisher or subscriber), and more.
                             </p>
+                            <h3>Example Code Snippets - Provisioning Subscribers, Publishers, Brokers, &amp; BackupPools
+                            </h3>
                             <p>The below code snippet is executed by the driver if you pass the
                                 "<code>--subscriber N</code>" argument, where N is the number of subscribers you want
                                 to
@@ -2282,7 +2287,14 @@ backup_pool = BackupPool(
 )
 backup_pool.watch_system_load() # implementation below
 backup_pool.wait_for_trigger() # implementation below
-.... 
+</code></pre>
+                            <p>The following methods (used in the above snippet) are snippets pulled from the BackupPool
+                                class. In short, the BackupPool watches the system load stored in a shared state znode,
+                                and
+                                auto-provisions new zones (with new brokers) if that system load ever goes beyond the
+                                load
+                                threshold for the system.</p>
+                            <pre class="code-snippet"><code>
 def wait_for_trigger(self):
         while True:
             time.sleep(0.5) 
@@ -2318,8 +2330,7 @@ def spin_up_new_broker(self):
     broker.setup_shared_state_znode()
     broker.setup_load_balancing_znode()
     broker.watch_shared_state_publishers()
-    broker.watch_shared_state_subscribers()
-    # FIXME: this is going to block! Will this spin up only work for one broker?
+    broker.watch_shared_state_subscribers() 
     self.debug(f'Running election for new broker {id(broker)}')
     broker.zk_run_election() 
                             </code></pre>
