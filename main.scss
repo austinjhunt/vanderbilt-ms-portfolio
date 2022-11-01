@@ -581,12 +581,10 @@ code {
 pre.code-snippet {
   border: 1px solid grey;
   border-radius: 10px;
+  font-size: 0.75rem;
   padding: 1rem;
   margin-top: 1rem;
   margin-bottom: 1rem;
-  &.small {
-    font-size: 0.5rem;
-  }
 }
 
 .highlight {
