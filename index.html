@@ -2676,14 +2676,15 @@ python3 driver.py --subscriber 1 --topics B --indefinite \
                             </ol>
                             <h3>How is ZooKeeper used?</h3>
                             <div class="center">
-                                <img src="img/pubsub-architecture.jpg" class="w-75" />
+                                <img src="img/pubsub-architecture.jpg" class="w-100" />
                             </div>
                             <ul>
                                 <li>
                                     <h4>Leader Election</h4>
                                     <p>
-                                        In iteration 2, there was only Zookeeper broker election observed by
+                                        In iteration 2, there was only a single Zookeeper broker election observed by
                                         the brokers to achieve fault tolerance. This used an <code>/electionpath</code>
+                                        znode
                                         with ZooKeeper. The first broker to get created won the election immediately and
                                         became the leader, and any subsequent brokers would become contenders for the
                                         leadership by entering the <code>/electionpath</code> election and waiting for
@@ -2837,40 +2838,218 @@ python3 driver.py --subscriber 1 --topics B --indefinite \
                     <h2 class="section-header">
                         Communication Skills in Computer Science
                     </h2>
+                    <hr />
+                    <h3>A Comprehensive Evaluation of Couchbase as a Distributed Datastore</h3>
+                    <hr />
+                    <div class="paper-authors mb-2">
+                        <div class="spacer"></div>
+                        <div class="author">
+                            <p>Austin Hunt</p>
+                            <p>Department of Computer Science</p>
+                            <p>Vanderbilt University</p>
+                            <p>Nashville, TN, USA</p>
+                            <p><a href="mailto:austin.j.hunt@vanderbilt.edu">austin.j.hunt@vanderbilt.edu</a></p>
+                        </div>
+                        <div class="spacer"></div>
+                        <div class="author">
+                            <p>Guoliang Ding</p>
+                            <p>Department of Computer Science</p>
+                            <p>Vanderbilt University</p>
+                            <p>Nashville, TN, USA</p>
+                            <p><a href="mailto:guoliang.ding@vanderbilt.edu">guoliang.ding@vanderbilt.edu</a></p>
+                        </div>
+                        <div class="spacer"></div>
+                    </div>
+                    <hr />
                     <p>
-                        A student in the M.Sc. degree program in Computer Science must be
-                        able to communicate computer science concepts in an effective
-                        professional manner. One artifact is required to demonstrate the
-                        student's oral or writing communication skills. The artifact can
-                        be a project report or a presentation that was performed for a
-                        Computer Science course. If the student has participated in work
-                        that resulted in publications or presentations in technical
-                        conferences, the corresponding artifacts should be included with
-                        an explanation clarifying the student's contribution.
+                        The following paper was authored in collaboration with <a
+                            href="https://www.linkedin.com/in/guoliangding/" target="_blank">
+                            Guoliang Ding
+                        </a> for Dr. Aniruddha Gokhale's CS-6381 Distributed Systems course. It provides a detailed
+                        analysis of:</p>
+                    <ul class="bulleted">
+                        <li>
+                            <p>
+                                The architecture of <a href="https://www.couchbase.com/" target="_blank">Couchbase,
+                                    a distributed NoSQL cloud database</a>,
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                The architecture of our <a target="_blank"
+                                    href="https://github.com/austinjhunt/automated-couchbase-evaluation">automated
+                                    testing framework (written in Python) for evaluating Couchbase as a distributed
+                                    datastore</a>, and
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                The test results obtained from executing that framework against a live Couchbase
+                                cluster, with focus on relationships between operation latencies (for read, insert,
+                                update, and delete) and parameters like durability configuration, cluster size, bucket
+                                size, and operation type.
+                            </p>
+                        </li>
+                    </ul>
+                    <p>The underlying software project on which the paper is based uses tools like Ansible, Vagrant, AWS
+                        EC2, the Couchbase CLI, the YCSB project, the Python 3 Couchbase SDK, and of course Couchbase to
+                        automatically and iteratively provision, evaluate, and deprovision clusters of various
+                        configurations to collect data that highlights how configuration changes affect cluster
+                        performance.</p>
+
+                    <h3>Variables of Interest</h3>
+                    <p>We test and analyze Couchbase along a variety of metrics in an auto-provisioned cloud
+                        infrastructure environment using AWS EC2; we analyze metrics like:
                     </p>
+                    <ul class="bulleted">
+                        <li>
+                            <p>Cluster size impact on latency of read, write, insert, and delete operations,
+                                specifically with a
+                                homogeneous architecture (same services on every node) to understand how
+                                scaling cluster size affects cluster performance</p>
+                        </li>
+                        <li>
+                            <p><a target="_blank"
+                                    href="https://www.couchbase.com/multi-dimensional-scalability-overview">
+                                    Multidimensional service scaling</a> impact on read/write/delete operations, to
+                                understand
+                                how scaling out a service X by one additional node affects cluster performance.
+                                Couchbase offers <a
+                                    href="https://docs.couchbase.com/server/6.0/clustersetup/services-mds.html"
+                                    target="_blank">multi-dimensional scaling of services</a>, meaning that you can
+                                scale specific services
+                                independently based on what your application needs are. For example, if you are dealing
+                                with massive
+                                amounts of data, you may want to independently scale out your data service more so than
+                                the other
+                                services. <a target="_blank"
+                                    href="https://docs.couchbase.com/server/current/learn/services-and-indexes/services/services.html">
+                                    These are the main services within a Couchbase cluster.</a></p>
+                        </li>
+                        <li>
+                            <p>Using <a href="https://github.com/brianfrankcooper/YCSB" target="_blank">Yahoo! Cloud
+                                    Serving Benchmark (YCSB)</a>, how does database size (for a given cluster
+                                size N) affect tail latency of different operation types (read/update/insert)? We vary
+                                database size via variations in
+                                1) document count, 2) document field count (fields per document), and 3) document field
+                                size (in bytes).</p>
+                        </li>
+                        <li>
+                            <p>Using <a href="https://github.com/brianfrankcooper/YCSB" target="_blank">Yahoo! Cloud
+                                    Serving Benchmark (YCSB)</a>, how does a change in <a
+                                    href="https://stackoverflow.com/questions/42767138/zipfian-vs-uniform-whats-the-difference-between-these-two-ycsb-distribution"
+                                    target="_blank">request distribution</a> impact tail latency of different operation
+                                types (read/update/insert)?</p>
+                        </li>
+                        <li>
+                            <p>Using <a href="https://github.com/brianfrankcooper/YCSB" target="_blank">Yahoo! Cloud
+                                    Serving Benchmark (YCSB)</a>, how does the ratio between read/update/insert
+                                requests affect overall tail latency of database operations?</p>
+                        </li>
+                    </ul>
+                    <h3>Automation</h3>
+                    <p>The framework is architected such that all it needs is an AWS Access Key ID and AWS Secret Access
+                        Key set as environment variables. It can be executed with Vagrant using the command
+                        <code>vagrant up --provision</code>. The provisioner for the Vagrant box is an Ansible Playbook
+                        that handles the automatic provisioning and configuration of a set of Ubuntu 20.04 AWS EC2
+                        instances and then kicks off the test framework via a central, parameterized <a
+                            href="https://github.com/austinjhunt/automated-couchbase-evaluation/blob/master/src/driver.py"
+                            target="_blank">driver</a> file. The framework itself then uses the provisioned EC2
+                        instances to automatically and iteratively create and tear down various Couchbase cluster
+                        architectures via custom Python classes <a
+                            href="https://github.com/austinjhunt/automated-couchbase-evaluation/blob/master/src/lib/DataManager.py"
+                            target="_blank">DataManager</a> and <a
+                            href="https://github.com/austinjhunt/automated-couchbase-evaluation/blob/master/src/lib/ClusterManager.py"
+                            target="_blank">ClusterManager</a>. Python is used for not only the data management
+                        (via DataManager) via the provided Python 3 SDK, but also the management of the cluster
+                        architecture (via ClusterManager) in order to eliminate the need for interacting manually with
+                        the Couchbase Web GUI. Note: since much of the cluster architecture management could not be done
+                        using the default Python 3 SDK, we created methods that "wrapped" the Couchbase CLI (which could
+                        manage cluster architecture) to make this a <strong>fully Pythonic project.</strong>
+                    </p>
+                    <p>The framework writes out latency data during test execution, which is used afterward to generate
+                        various plots that reveal relationships between the various variables we tune (e.g. cluster size
+                        vs. operation latency and bucket size vs. operation latency). If you want plots when the
+                        framework is done running tests, just pass -plt to the driver.</p>
+                    <h3>Contributions</h3>
+                    <p>Guoliang and I divided the work for the paper up such that he covered the analysis of Couchbase's
+                        architecture, and I covered the analysis of the automation framework, including the results from
+                        its execution. On the software side, I worked on building the Python automation framework and
+                        setting it up to link with Ansible, Vagrant, and AWS EC2, and Guoliang worked with the
+                        integration of the Yahoo! Cloud Serving Benchmark data workloads into that framework.
+                    </p>
+
+                    <div class="hide-for-print center">
+                        <hr />
+                        <h3><a href="papers/Vanderbilt6381_CouchbaseReport_FinalProject.pdf" target="_blank"
+                                class="hide-for-print">READ THE PAPER</a></h3>
+                        <hr />
+                    </div>
                 </section>
             </div>
-
             <div class="pagebreak"></div>
             <div class="page">
                 <section class="c-archives">
                     <h2 class="section-header">
                         Conduct Independent Inquiry in Computer Science
                     </h2>
-                    <p>
-                        A student in the M.Sc. degree program in Computer Science must
-                        demonstrate competence in the conduct of independent inquiry;
-                        compilation of a written account of such inquiry, its outcomes,
-                        and conclusions. One artifact is required to demonstrate the
-                        student's competence to conduct independent inquiry in computer
-                        science. Such an artifact should document work performed for a
-                        project in a Computer Science class, for an independent study
-                        class, or for a research project. The artifact must include all
-                        components that demonstrate the conduct of the inquiry such as
-                        problem statement, design and research methodology, project
-                        reports, and software artifacts.
-                    </p>
+                    <hr />
+                    <h3>A Contextual Analysis of CRYSTALS-Dilithium, a Quantum-Resistant, Lattice-Based
+                        Digital
+                        Signature Scheme</h3>
+                    <hr />
+                    <div class="paper-authors mb-2">
+                        <div class="author">
+                            <p>Austin Hunt</p>
+                            <p>Department of Computer Science</p>
+                            <p>Vanderbilt University</p>
+                            <p>Nashville, TN, USA</p>
+                            <p><a href="mailto:austin.j.hunt@vanderbilt.edu">austin.j.hunt@vanderbilt.edu</a></p>
+                        </div>
+                    </div>
+                    <hr />
+                    <p>I wrote the following paper for the CS-8395 Special Topics: Quantum Computing course taught by
+                        Dr.
+                        Easttom. The challenge was provide an analysis of a chosen quantum-resistant cryptographic
+                        algorithm, and while doing some initial investigation I came across a <a
+                            href="https://www.nist.gov/news-events/news/2022/07/nist-announces-first-four-quantum-resistant-cryptographic-algorithms"
+                            target="_blank">July 2022 announcement</a> from the
+                        National Institute of Standards and Technology (NIST) about the first group of winning
+                        quantum-resistant cryptographic algorithms from its six-year competition; <a
+                            href="https://pq-crystals.org/dilithium/" target="_blank">CRYSTALS-Dilithium</a> was
+                        one of those. Before writing, I knew nothing about quantum-resistant cryptography or the role of
+                        lattice-based mathematics in that domain. However, I had recently written an <a
+                            href="https://austinjhunt.medium.com/breaking-down-modern-trust-digital-signatures-and-their-impact-on-business-2dfbd4120dae"
+                            target="_blank">article</a> about digital signatures and their impact on modern business
+                        security, so CRYSTALS-Dilithium &mdash; a digital signature scheme &mdash; struck me
+                        as a worthwhile investigation. <strong>It's easier to learn about new things if you can connect
+                            them to
+                            things you've already learned about.</strong> With that, I should note that when writing
+                        this paper, I made a concerted effort to provide as much background and context around new
+                        topics before referencing or introducing them. For example, before diving too deeply into a
+                        discussion of lattice-based cryptography and its value in quantum resistance, I first provide an
+                        explanation of lattices in relation to vector spaces. Also, before discussing the Closest Vector
+                        Problem (CVP), I make an effort to explain the Shortest Vector Problem (SVP), which is
+                        generalized by CVP. There are other instances of this deconstruction and contextualization in
+                        the paper. I mentioned
+                        earlier in this portfolio that I have made a habit of deconstructing things I don't understand
+                        until I can meaningfully reassemble the parts I do understand. I took that approach with this
+                        paper, which entailed a significant amount of research on my part in the forms of reading other
+                        papers and
+                        articles and watching quite a few YouTube videos, including this <a
+                            href="https://www.youtube.com/watch?v=UINdiUIp96Y" target="_blank">2018 Conference on
+                            Cryptographic Hardware and Embedded Systems</a> presentation from Gregor Seiler (with IBM
+                        Research) on the design of CRYSTALS-Dilithium.</p>
+                    <p>This research project did not involve the development of software or any other artifacts apart
+                        from the following paper.</p>
+                    <div class="hide-for-print center">
+                        <hr />
+                        <h3><a href="papers/CRYSTALS_Dilithium_Analysis.pdf" target="_blank" class="hide-for-print">READ
+                                THE PAPER</a></h3>
+                        <hr />
+                    </div>
                 </section>
+                <div class="pagebreak"></div>
             </div>
         </div>
     </main>
